@@ -1,29 +1,34 @@
 import React, { useState } from 'react';
-import Laptop from '../assets/laptop-nobg.png';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name.toLowerCase()]: e.target.value });
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage('');
+    // Replace with your login endpoint and logic
     try {
-      const response = await fetch('http://localhost:3000/api/auth/register', {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
       const data = await response.json();
       if (response.ok) {
-        setMessage('Signup successful! You can now log in.');
-        setForm({ name: '', email: '', password: '' });
+        setMessage('Login successful!');
+        // Redirect to dashboard after successful login
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 1500);
       } else {
-        setMessage(data.msg || 'Signup failed.');
+        setMessage(data.msg || 'Login failed.');
       }
     } catch (err) {
       setMessage('Server error. Please try again later.');
@@ -31,57 +36,71 @@ const Login = () => {
   };
 
   return (
-    <div className='relative w-full py-16 overflow-hidden'>
-      <div className='max-w-[1240px] mx-auto grid md:grid-cols-2 items-center px-4'>
-        <img src={Laptop} className='mx-auto w-80 md:w-full' alt="Laptop" />
-        <div className="flex flex-col items-center">
-          <h1 className='text-white text-4xl text-center mb-6'>Signup Here.</h1>
-          {message && <div className="mb-4 text-center text-[#00df9a] font-semibold">{message}</div>}
-          <form onSubmit={handleSubmit} className='w-full flex flex-col items-center'>
-            <ul className='text-white flex flex-col items-center w-full gap-4'>
-              <li className='w-full max-w-md'>
-                <input
-                  type='text'
-                  name="Name"
-                  placeholder="Name"
-                  className="w-full h-12 text-lg p-3 rounded bg-gray-800 border border-gray-600 text-white"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                />
-              </li>
-              <li className='w-full max-w-md'>
-                <input
-                  type='email'
-                  name="Email"
-                  placeholder="Email"
-                  className="w-full h-12 text-lg p-3 rounded bg-gray-800 border border-gray-600 text-white"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                />
-              </li>
-              <li className='w-full max-w-md pb-4'>
-                <input
-                  type='password'
-                  name="Password"
-                  placeholder="Password"
-                  className="w-full h-12 text-lg p-3 rounded bg-gray-800 border border-gray-600 text-white"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                />
-              </li>
-            </ul>
+    <div className="min-h-screen flex items-center justify-center bg-[#000300] py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
+            Sign in to your account
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-400">
+            Don't have an account?{' '}
+            <Link to="/signup" className="font-medium text-[#00df9a] hover:text-[#00df9a]/80">
+              Sign up
+            </Link>
+          </p>
+        </div>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="email" className="sr-only">
+                Email address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-400 text-white bg-gray-800 focus:outline-none focus:ring-[#00df9a] focus:border-[#00df9a] focus:z-10 sm:text-sm"
+                placeholder="Email address"
+                value={form.email}
+                onChange={handleChange}
+              />
+            </div>
+            <div>
+              <label htmlFor="password" className="sr-only">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                required
+                className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-600 placeholder-gray-400 text-white bg-gray-800 focus:outline-none focus:ring-[#00df9a] focus:border-[#00df9a] focus:z-10 sm:text-sm"
+                placeholder="Password"
+                value={form.password}
+                onChange={handleChange}
+              />
+            </div>
+          </div>
+
+          <div>
             <button
               type="submit"
-              className='relative mx-auto my-4 w-[225px] h-9 bg-white text-black rounded cursor-pointer overflow-hidden group font-bold uppercase flex items-center justify-center'
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-[#00df9a] hover:bg-[#00df9a]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#00df9a] focus:ring-offset-gray-800 transition-colors duration-200"
             >
-              <span className='absolute inset-0 w-0 group-hover:w-full h-full bg-[#00df9a] opacity-50 transition-all duration-300 ease-out'></span>
-              <span className='relative z-10'>Click Here to Signup</span>
+              Sign in
             </button>
-          </form>
-        </div>
+          </div>
+        </form>
+        {message && (
+          <div className={`mt-4 p-3 rounded-md text-center ${
+            message.includes('successful') 
+              ? 'bg-green-900/50 text-green-400' 
+              : 'bg-red-900/50 text-red-400'
+          }`}>
+            {message}
+          </div>
+        )}
       </div>
     </div>
   );

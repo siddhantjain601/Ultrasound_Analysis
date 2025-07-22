@@ -1,23 +1,22 @@
-import React, { useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Login from './components/Login';
+import Signup from './components/Signup';
+import Dashboard from './components/Dashboard';
 
 function App() {
-  const loginRef = useRef(null);
-
-  const scrollToLogin = () => {
-    loginRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
   return (
-    <div>
-      <Navbar onLoginClick={scrollToLogin}/>
-      <Hero onLoginClick={scrollToLogin}/>
-      <div ref={loginRef}>
-        <Login onLoginClick={scrollToLogin}/>
-      </div>
-    </div>
-  )
+    <Router>
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Hero />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
